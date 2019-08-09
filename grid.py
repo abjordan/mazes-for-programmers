@@ -49,6 +49,10 @@ class Grid:
         for r in sorted(self.cells.keys()):
             yield self.cells[r]
 
+    def each_cell_in_row(self, row):
+        for c in sorted(row.keys()):
+            yield row[c]
+            
     def each_cell(self):
         for r in sorted(self.cells):
             for c in sorted(self.cells[r]):
