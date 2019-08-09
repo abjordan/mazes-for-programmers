@@ -24,7 +24,11 @@ class Sidewinder:
 
 if __name__=="__main__":
     import grid
+    import sys
+    
     grid = grid.Grid(24, 24)
     sw = Sidewinder()
     maze = sw.on(grid)
     print(maze.ascii())
+
+    maze.to_png(sys.argv[1])

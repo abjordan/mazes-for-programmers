@@ -77,7 +77,39 @@ class Grid:
             output += top + "\n"
             output += bottom + "\n"
         return output
-                
+
+    def to_png(self, output=None, cell_size=10):
+        try:
+            from PIL import Image, ImageDraw, ImageColor
+        except ImportError:
+            print("Error: Please install Pillow (pip install Pillow) to export to PNG")
+            return None
+
+        img_width = cell_size * self.columns
+        img_height = cell_size * self.rows
+
+        background = ImageColor.getrgb("white")
+        foreground = ImageColor.getrgb("black")
+
+        img = Image.new("RGB", (img_width+1, img_height+1), color=background)
+        draw = ImageDraw.Draw(img)
+
+        for cell in self.each_cell():
+            x1 = cell.column * cell_size
+            y1 = cell.row * cell_size
+            x2 = (cell.column + 1) * cell_size
+            y2 = (cell.row + 1) * cell_size
+
+            if not cell.north: draw.line([(x1, y1), (x2, y1)], fill=foreground, width=1)
+            if not cell.west : draw.line([(x1, y1), (x1, y2)], fill=foreground, width=1)
+            if not cell.is_linked(cell.east) : draw.line([(x2, y1), (x2, y2)], fill=foreground, width=1)
+            if not cell.is_linked(cell.south): draw.line([(x1, y2), (x2, y2)], fill=foreground, width=1)
+
+        if output:
+            img.save(output, "PNG")
+        else:
+            print(img)
+    
 if __name__=="__main__":
     g = Grid(4, 4)
     print(g[0,0])
