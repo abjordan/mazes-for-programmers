@@ -58,6 +58,10 @@ class Grid:
             for c in sorted(self.cells[r]):
                 yield self.cells[r][c]
 
+    def contents_of(self, cell):
+        return " "
+
+                
     def ascii(self):
         output = "+" + "---+" * self.columns + "\n"
         for row in sorted(self.cells):
@@ -66,7 +70,7 @@ class Grid:
             for col in sorted(self.cells[row]):
                 cell = self.cells[row][col]
 
-                body = "   "
+                body = " {} ".format(self.contents_of(cell))
                 east = " " if cell.is_linked(cell.east) else "|"
                 top += body + east
 

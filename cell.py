@@ -1,34 +1,36 @@
 #!/usr/bin/env python
 
+from distances import Distances
+
 class Cell:
 
     row = None
     column = None
-    links = None
+    my_links = None
     (north, south, east, west) = (None, None, None, None)
     
     def __init__(self, r, c):
         self.row = r
         self.column = c
-        self.links = {}
+        self.my_links = {}
 
     def link(self, cell, bidi=True):
-        self.links[cell] = True
+        self.my_links[cell] = True
         if bidi:
             cell.link(self, False)
         return self
 
     def unlink(self, cell, bidi=True):
-        self.links.remove(cell)
+        self.my_links.remove(cell)
         if bidi:
             cell.unlink(self, false)
         return self
 
     def links(self):
-        return self.links.keys()
+        return self.my_links.keys()
 
     def is_linked(self, cell):
-        return self.links.get(cell, False)
+        return self.my_links.get(cell, False)
 
     def neighbors(self):
         ret = []
@@ -39,9 +41,25 @@ class Cell:
 
         return ret
 
+    def distances(self):
+        distances = Distances(self)
+        frontier = [ self ]
+
+        while len(frontier) is not 0:
+            new_frontier = []
+            for cell in frontier:
+                for linked in cell.links():
+                    if linked in distances.keys():
+                        continue
+                    distances[linked] = distances[cell] + 1
+                    new_frontier.append(linked)
+            frontier = new_frontier
+
+        return distances
+    
     def __str__(self):
         ret = "Cell at ({}, {}), linked to {} neighbors".format(
-            self.row, self.column, len(self.links))
+            self.row, self.column, len(self.my_links))
         return ret
 
 
@@ -57,3 +75,7 @@ if __name__=="__main__":
     print("C: " + str(c))
     print("D: " + str(d))
     print("E: " + str(e))
+
+    c_dist = c.distances()
+    for key in c_dist.keys():
+        print(key, c_dist[key])
